@@ -1,0 +1,109 @@
+databaseChangeLog:
+  - changeSet:
+      id: RNR-4279-1
+      author: Ahmed Zaher
+      changes:
+        - createTable:
+            tableName: tasks
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                  name: id
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: description
+                  type: TEXT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status
+                  type: VARCHAR(100)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: project_id
+                  type: VARCHAR(100)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: user_id
+                  type: VARCHAR(100)
+              - column:
+                  constraints:
+                    nullable: false
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  name: created_on
+                  type: timestamp
+              - column:
+                  constraints:
+                    nullable: false
+                  name: action
+                  type: VARCHAR(100)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: entity
+                  type: VARCHAR(100)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: start_date
+                  type: VARCHAR(100)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: end_date
+                  type: VARCHAR(100)
+              - column:
+                  name: filters
+                  type: VARCHAR(255)
+              - column:
+                  name: affected_rows
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: username
+                  type: VARCHAR(100)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: uuid
+                  type: VARCHAR(100)
+  - changeSet:
+      id: RNR-4279-2
+      author: Ahmed Zaher
+      changes:
+        - createTable:
+            tableName: tasksolicitations
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                  name: id
+                  type: INT UNSIGNED
+              - column:
+                  constraints:
+                    nullable: false
+                  name: solicitation_uuid
+                  type: VARCHAR(100)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: taskid
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: tasksolicitationIndex
+                  type: INT
+              - column:
+                  constraints:
+                    nullable: false
+                  name: status
+                  type: VARCHAR(30)
