@@ -1,33 +1,22 @@
 FROM openjdk:8-jre
 
+#install lates postges connector
+RUN apt-get update && apt-get install -yq --no-install-recommends libpostgresql-jdbc-java jq
+
 # Add the liquibase user and step in the directory
 RUN adduser --system --home /liquibase --disabled-password --group liquibase
 WORKDIR /liquibase
+	
+# Download, install & Latest Liquibase
+RUN LIQUIBASE_VERSION=`curl -s https://api.github.com/repos/liquibase/liquibase/releases/latest | jq -r .tag_name | cut -c2-` \ 
+	&& curl -L https://github.com/liquibase/liquibase/releases/download/v${LIQUIBASE_VERSION}/liquibase-${LIQUIBASE_VERSION}.tar.gz \
+	 | tar -xzf - && chmod 755 /liquibase
 
-# Latest Liquibase Release Version
-ARG LIQUIBASE_VERSION=3.8.7
+# Download latest mysql
+ARG MYSQL_VERISON=8.0.19
+RUN curl -L https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${MYSQL_VERISON}.tar.gz | tar -xzf - \
+	&& mv ./mysql-connector-java-${MYSQL_VERISON}/mysql-connector-java-${MYSQL_VERISON}.jar mysql-connector-j.jar \
+	&& rm -rf ./mysql-connector-java-${MYSQL_VERISON}
 
-# Download, install & Liquibase
-RUN set -x \
-  && curl -L https://github.com/liquibase/liquibase/releases/download/v${LIQUIBASE_VERSION}/liquibase-${LIQUIBASE_VERSION}.tar.gz | tar -xzf -
 
-# Set liquibase to executable
-RUN chmod 755 /liquibase
-
-RUN mkdir drivers
-
-# Download Mysql Driver
-ARG MYSQL_DRIVER_VERSION=8.0.19
-RUN curl -L https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-${MYSQL_DRIVER_VERSION}.tar.gz | tar -xzf -
-RUN mv mysql-connector*/mysql-connector-*.jar drivers/mysql-connector.jar \
-	&& rm -rf mysql-connector-*
-
-# Download Postgres Driver
-ARG POSTGRESQL_DRIVER_VERSION=42.2.11
-RUN curl -L https://jdbc.postgresql.org/download/postgresql-${POSTGRESQL_DRIVER_VERSION}.jar --output drivers/postgresql-connector.jar 
-
-CMD ./liquibase \ 
-	--changeLogFile=./db/changelog/db.changelog-master.yaml \ 
-	--classpath=./drivers/${DB_TYPE}-connector.jar \
-	--url=${DB_URL} --username=${DB_USERNAME} --password=${DB_PASSWORD} \
-	update
+CMD ./liquibase --defaultsFile=./resources/liquibase.properties update

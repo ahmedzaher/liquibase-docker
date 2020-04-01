@@ -1,0 +1,25 @@
+version: "2.1"
+services:
+ liquibase:
+  image:  liquibase-docker
+  network_mode: "host"
+  depends_on: 
+    mysql_db:
+        condition: service_healthy
+  volumes:
+    - ./test-resources:/liquibase/resources
+
+ mysql_db:
+  image: mysql:latest
+  network_mode: "host"
+  ports:
+   - 3306:3306
+  environment:
+   MYSQL_ROOT_PASSWORD: MYSQL_RANDOM_ROOT_PASSWORD
+   MYSQL_DATABASE: mydb
+   MYSQL_USER: db_user
+   MYSQL_PASSWORD: db_pass
+  healthcheck:
+    test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+    timeout: 20s
+    retries: 10
