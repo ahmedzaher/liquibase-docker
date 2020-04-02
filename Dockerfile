@@ -19,4 +19,5 @@ RUN curl -L https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java
 	&& rm -rf ./mysql-connector-java-${MYSQL_VERISON}
 
 
-CMD ./liquibase --defaultsFile=./resources/liquibase.properties update
+CMD ./liquibase --classpath=/usr/share/java/postgresql.jar:./mysql-connector-j.jar \
+	--defaultsFile=./resources/liquibase.properties update
